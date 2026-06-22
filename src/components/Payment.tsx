@@ -1,30 +1,41 @@
+import { useState } from 'react';
 import PaymentMethod from '../types/PaymentMethod';
 import { PaymentStrategyFactory } from '../class/PaymentStrategyFactory';
 
+const factory = new PaymentStrategyFactory();
+const paymentMethodKeys = Object.keys(PaymentMethod) as Array<keyof typeof PaymentMethod>;
+
 const Payment = () => {
-	const paymentMethodArray = Object.keys(PaymentMethod).filter((key) =>
-		isNaN(Number(key)),
-	) as Array<keyof typeof PaymentMethod>;
+	const [selectedMethod, setSelectedMethod] = useState<keyof typeof PaymentMethod | ''>('');
+
+	const handlePay = () => {
+		if (!selectedMethod) return;
+		factory.getPaymentStrategy(PaymentMethod[selectedMethod])?.pay();
+	};
 
 	return (
 		<>
 			<label htmlFor='payment'>Select a payment method</label>
 			<select
+				id='payment'
 				name='payment'
-				onChange={(e) => {
-					const paymentStrategy =
-						new PaymentStrategyFactory().getPaymentStrategy(
-							PaymentMethod[e.target.value as keyof typeof PaymentMethod],
-						);
-					paymentStrategy?.pay();
-				}}
+				value={selectedMethod}
+				onChange={(e) =>
+					setSelectedMethod(e.target.value as keyof typeof PaymentMethod)
+				}
 			>
-				{paymentMethodArray.map((paymentMethod) => (
+				<option value='' disabled>
+					Select payment method
+				</option>
+				{paymentMethodKeys.map((paymentMethod) => (
 					<option key={paymentMethod} value={paymentMethod}>
 						{paymentMethod}
 					</option>
 				))}
 			</select>
+			<button onClick={handlePay} disabled={!selectedMethod}>
+				Pay
+			</button>
 		</>
 	);
 };

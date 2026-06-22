@@ -1,16 +1,25 @@
 import { useState } from 'react';
 import PaymentMethod from '../types/PaymentMethod';
 import { PaymentStrategyFactory } from '../class/PaymentStrategyFactory';
+import PaymentStatus from './PaymentStatus';
 
-const factory = new PaymentStrategyFactory();
-const paymentMethodKeys = Object.keys(PaymentMethod) as Array<keyof typeof PaymentMethod>;
+const paymentStrategyFactory = new PaymentStrategyFactory();
+const paymentMethodKeys = Object.keys(PaymentMethod) as Array<
+	keyof typeof PaymentMethod
+>;
 
 const Payment = () => {
-	const [selectedMethod, setSelectedMethod] = useState<keyof typeof PaymentMethod | ''>('');
+	const [selectedMethod, setSelectedMethod] = useState<
+		keyof typeof PaymentMethod | ''
+	>('');
+	const [statusMessage, setStatusMessage] = useState('');
 
 	const handlePay = () => {
 		if (!selectedMethod) return;
-		factory.getPaymentStrategy(PaymentMethod[selectedMethod])?.pay();
+		const message = paymentStrategyFactory
+			.getPaymentStrategy(PaymentMethod[selectedMethod])
+			?.pay();
+		if (message) setStatusMessage(message);
 	};
 
 	return (
@@ -36,6 +45,7 @@ const Payment = () => {
 			<button onClick={handlePay} disabled={!selectedMethod}>
 				Pay
 			</button>
+			{statusMessage && <PaymentStatus message={statusMessage} />}
 		</>
 	);
 };

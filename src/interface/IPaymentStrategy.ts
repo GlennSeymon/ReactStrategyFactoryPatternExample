@@ -1,3 +1,3 @@
 export interface IPaymentStrategy {
-	pay: () => void;
+	pay: () => string;
 }

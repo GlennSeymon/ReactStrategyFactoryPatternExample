@@ -1,7 +1,5 @@
 import type { IPaymentStrategy } from '../interface/IPaymentStrategy';
 
 export class PayPalPaymentStrategy implements IPaymentStrategy {
-	pay = () => {
-		console.log('Paying with PayPal');
-	};
+	pay = () => 'Paying with PayPal';
 }
